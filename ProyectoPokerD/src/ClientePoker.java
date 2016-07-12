@@ -264,9 +264,9 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 		salida.format("%d\n", mesaDeJuego);
 		salida.flush();
 		miIdentidad = entrada.nextLine();
-		System.out.println(miIdentidad);
+		//System.out.println(miIdentidad);
 		cartasRecibidas = entrada.nextLine();
-		System.out.println(cartasRecibidas);
+		//System.out.println(cartasRecibidas);
 		if(mesaDeJuego == 1)
 		{
 			recibirCartas(7);
@@ -276,6 +276,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			recibirCartas(5);
 		}
 		miTurno = (miIdentidad.equals("0"));
+		
 //		int mensaje = -1; 
 //		if(entrada.hasNextInt())
 //			mensaje = entrada.nextInt();
@@ -295,8 +296,8 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 	
 		while (true)
 		{
-//			if(entrada.hasNextInt() )
-//				procesarMensaje(entrada.nextInt() );
+			if(entrada.hasNextLine() )
+				procesarMensaje(entrada.nextLine() );
 		}
 //
 	}
@@ -330,21 +331,15 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			
 		}
 		
-		for(int i=0; i<num; i++)
-		{
-			
-				System.out.print( cartasMano[i].getNumero()+ "  "+cartasMano[i].getPalo());
-			
-			System.out.println();
-		}
+		
 	}
 
-	public void procesarMensaje (int codigo)
+	public void procesarMensaje (String codigo)
 	{
 	
+		System.out.println(codigo);
 		
-		
-		if(codigo == 0) //codigo para recibir el valor de apuesta a igualar, o apuesta mínima.
+		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mínima.
 		{
 			int auxInt= 0; 
 			miTurno = true;
@@ -352,13 +347,13 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			setValorApuesta(auxInt);
 		}
 		
-		else if(codigo == 1 ) //codigo para recibir un STRING para mostrar en el area de texto 
+		else if(codigo.equals("1") ) //codigo para recibir un STRING para mostrar en el area de texto 
 		{
 			String auxString = "";
 			auxString = entrada.nextLine();
 			mostrarMensaje(auxString);  
 		}
-		else if(codigo == 2) //Codigo para recibe mensajes de String del cliente con la mano ganadora 
+		else if(codigo.equals("2")) //Codigo para recibe mensajes de String del cliente con la mano ganadora 
 		{
 			String auxString = entrada.nextLine(); //string con la mano ganadora
 			entrada.nextInt () ;
@@ -366,24 +361,24 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			mostrarMensaje("Gana el jugador " + auxInt + " con :" + auxString+ "\n" ) ; 
 			activoEnRonda = true; 
 		}
-		else if (codigo == 3) //codigo para recibir monto cuando se gana la partida
+		else if (codigo.equals("3")) //codigo para recibir monto cuando se gana la partida
 		{
 			int auxInt = entrada.nextInt(); 
 			
 			setDineroRestante(auxInt);
 		}
 		
-		else if (codigo == 4) // código para recibir confirmación de que la apuesta enviada al server es válida.
+		else if (codigo.equals("4")) // código para recibir confirmación de que la apuesta enviada al server es válida.
 		{
 			miTurno = false; 
 			mostrarMensaje("Apuesta Válida\n");
 		}
-		else if (codigo == 5) //código para recibir info de que la apuesta enviada al server NO es válida.
+		else if (codigo.equals("5")) //código para recibir info de que la apuesta enviada al server NO es válida.
 		{
 			miTurno = true; 
 			mostrarMensaje("Apuesta No Válida, Intenta de Nuevo  \n");
 		}
-		else if (codigo == 6) //para recibir el dinero restante y lo apostado hasta el momento en la mano actual,.
+		else if (codigo.equals("6")) //para recibir el dinero restante y lo apostado hasta el momento en la mano actual,.
 		{
 			int aux = 0; 
 			
@@ -392,7 +387,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			dineroApostado = entrada.nextInt(); 
 			System.out.println("dineroA:" + dineroApostado);
 		}
-		else if (codigo == 7) //oara iniciar la fase de Descarte
+		else if (codigo.equals("7")) //oara iniciar la fase de Descarte
 		{
 			miTurno = true; 
 			faseDescarte = true;
@@ -400,7 +395,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			
 			
 		}
-		else if (codigo == 8) //para finalizar la fase de descarte
+		else if (codigo.equals("8")) //para finalizar la fase de descarte
 		{
 			faseDescarte = false; 
 			
@@ -413,6 +408,12 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 				
 			}
 			miTurno = false;
+		}
+		
+		else if (codigo.equals("9")) //para finalizar la fase de descarte
+		{
+			System.out.println("holiiiii");
+			mostrarMensaje ("eres el jugador 1"); 
 		}
 			
 		
