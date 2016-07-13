@@ -1,4 +1,4 @@
- //@nombre: Jhon Alejandro Orobio 
+//@nombre: Jhon Alejandro Orobio 
 //@código: 1533627
 //@fecha: 17/junio/2016
 
@@ -162,21 +162,36 @@ public class ServidorPoker {
 		
 		
 		
-			if( (jugadores[jugadorActual].getJugada() !=  0))
+			if( (jugadores[jugadorActual].getJugada() != 0))
 			{
 				jugadores[jugadorActual].setJugada(0);
 				
 				for (int i = 0;i < 3;i++)
 	        	{
 			 		cuentaTurno = ( cuentaTurno + 1 ) % 4;
-	        		jugadores[cuentaTurno].otroJugadorMovio(jugadores,jugadorActual,aux);
+	        		jugadores[cuentaTurno].actualizarInterfaces(aux);
 	        		
 	        		System.out.println("cambio"+" "+cuentaTurno);
 	        	}
+				System.out.println("jugador actualholi: "+jugadorActualTexas); 
 			 	
-			 	 jugadorActual = ( jugadorActual + 1 ) % 4;
-			 	   
-			 	System.out.println("jugador actual23: "+jugadorActual); 
+				jugadorActual = ( jugadorActual + 1 ) % 4;
+				
+				if(jugadores[jugadorActual].getTipoJuego() == 1)
+				{
+					
+			 	 jugadorActualTexas = ( jugadorActualTexas + 1 ) % 4;
+			 	 jugadores[jugadorActualTexas].otroJugadorMovio(jugadores, jugadorActualTexas,aux);
+				}  
+				
+				else if(jugadores[jugadorActual].getTipoJuego() == 2)
+				{
+					
+			 	 jugadorActualCubierto = ( jugadorActualCubierto + 1 ) % 4;
+			 	 jugadores[jugadorActualCubierto].otroJugadorMovio(jugadores, jugadorActualCubierto,aux);
+				}  
+				
+			 	System.out.println("jugador actuachao: "+jugadorActualTexas); 
 //	           
 	            bloqueoJuego.lock(); // bloquea el juego para indicar al otro jugador que realice su movimiento
 	            
@@ -350,6 +365,15 @@ public class ServidorPoker {
 			}
 		}
 		
+		public void actualizarInterfaces(String aux)
+		{
+			
+			salida.format( "actualizar interfaz\n" );
+			salida.flush();
+			salida.format("%s\n",aux);
+			salida.flush();
+		}
+		
 		public void otroJugadorMovio(Jugador jugadores[],int jugadorActual,String aux)
 		{
 			if(terminarJuego() == true 
@@ -400,7 +424,7 @@ public class ServidorPoker {
 				{
 					controles [1]=new ControlJuego(); 
 					controles[1].setJugadorLocal(jugadoresCubierto );
-					controles[0].setOtroJugadorConectado(otroJugadorConectadoCubierto);
+					controles[1].setOtroJugadorConectado(otroJugadorConectadoCubierto);
 					
 					ejecutarJuego.execute( controles[1]);
 					
@@ -546,10 +570,10 @@ public class ServidorPoker {
 							if(tipoJuego == 1)
 								{
 									
-			
-									jugadores[jugadorActualTexas].setJugada(auxInt);
-								System.out.println(	jugadores[jugadorActualTexas].getNumeroJugador());
 									
+									jugadores[jugadorActualTexas].setJugada(auxInt);
+								
+//									System.out.println("soy la jugada: "+jugadores[jugadorActualTexas].getJugada()+" "+jugadorActualTexas );
 								}
 								
 								if(tipoJuego == 2)
@@ -570,10 +594,12 @@ public class ServidorPoker {
 						if(turnos(numeroJugador,jugadoresTexas,jugadorActualTexas,auxTexas))
 						{
 							contador++;
-							System.out.println("juga: "+jugadorActualTexas);
+//							System.out.println("juga: "+jugadorActualTexas);
 							
 							salida.format("Jugador ha movido\n");
 							salida.flush();
+							
+							
 							
 							
 						}
