@@ -1,4 +1,4 @@
- //@nombre: Jhon Alejandro Orobio 
+//@nombre: Jhon Alejandro Orobio 
 //@código: 1533627
 //@fecha: 17/junio/2016
 
@@ -24,14 +24,8 @@ import javax.swing.SwingUtilities;
 public class ServidorBuscaminas {
 	
 	private Jugador[] jugadores;
-	
-	private Jugador[] jugadoresTexas;
-	private Jugador[] jugadoresCubierto;
-	private ControlJuego[] controles;
 	private ServerSocket servidor; // socket servidor
-	private int contador1;
-	private int contador2;// contador del nï¿½mero de conexiones
-	private int contador;
+	private int contador =1; // contador del nï¿½mero de conexiones
 	private ExecutorService ejecutarJuego;
 	private Casilla casillaAux;
 	private Juego juego;
@@ -39,31 +33,21 @@ public class ServidorBuscaminas {
 	private Lock bloqueoJuego; // para bloquear el juego y estar sincronizado
 	private Condition otroJugadorConectado; // para esperar al otro jugador
 	private Condition turnoOtroJugador; // para esperar el turno del otro jugador
-	private int jugadorActualTexas;
-	private int jugadorActualCubierto;
+	private int jugadorActual;
 	private int tipoCasilla;
 	private String aux;
 	
-	private int cuentaTurno;
-	public ServidorBuscaminas() 
+	public ServidorBuscaminas()
 	{
 		aux = "";
-		contador = 0;
-		contador1 = 0;
-		contador2 = 0;
-		cuentaTurno = 0 ;
 		tipoCasilla = 0;
-		jugadorActualTexas = 0;
-		jugadorActualCubierto = 0;
+		jugadorActual = 0;
 		bloqueoJuego = new ReentrantLock(); 
 		otroJugadorConectado = bloqueoJuego.newCondition(); 
 		turnoOtroJugador = bloqueoJuego.newCondition();
 		tablero = new Casilla[10][10];
 		casillaAux = new Casilla();
-		jugadores = new Jugador[8];
-		controles = new ControlJuego[2];
-		jugadoresTexas = new Jugador[4];
-		jugadoresCubierto = new Jugador[4];
+		jugadores = new Jugador[2];
 		juego =new Juego();
 		tablero = juego.getTablero();
 		juego.llenaOro();
@@ -85,10 +69,9 @@ public class ServidorBuscaminas {
 		
 		
 		
-		ejecutarJuego = Executors.newFixedThreadPool( 8 );
-		
+		ejecutarJuego = Executors.newFixedThreadPool( 2 );
 		try {
-			servidor = new ServerSocket(12345,8);
+			servidor = new ServerSocket(12345,2);
 			System.out.println("conexion");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -99,60 +82,32 @@ public class ServidorBuscaminas {
 		for ( int i = 0; i < jugadores.length; i++ ) {
 			try {
 				
-				if(contador ==4)
-				{
-					contador = 0;
-				}
 				jugadores[i] = new Jugador( servidor.accept() );
-				jugadores[i].setNumeroJugador(contador++);
-				ejecutarJuego.execute(jugadores[i]);//establece la conexiï¿½n via Socket
+				jugadores[i].setNumeroJugador(i);//establece la conexiï¿½n via Socket
 				//System.out.println(jugadores[i].getNumeroJugador());
-				if(contador1 == 4)
-					{
-						controles [0]=new ControlJuego(); 
-						controles[0].setJugadorLocal(jugadoresTexas );
-						System.out.println("holi");
-						ejecutarJuego.execute( controles[0]);
-					
-						 // continï¿½a el jugador X
-						// despierta el subproceso del jugador X// ejecuta el objeto Runnable jugador
-					}
-				
-				if(contador2 == 4)
-				{
-					controles [1]=new ControlJuego(); 
-					controles[1].setJugadorLocal(jugadoresCubierto );
-					System.out.println("holi");
-					ejecutarJuego.execute( controles[1]);
-					
-					// despierta el subproceso del jugador X
-				}
-		} // fin de try
-			catch ( IOException excepcionES ) 
-			{
+				ejecutarJuego.execute( jugadores[ i ] ); // ejecuta el objeto Runnable jugador
+			} // fin de try
+			catch ( IOException excepcionES ) {
 				excepcionES.printStackTrace();
 				System.exit( 1 );
 				
 			} // fin de catch
 		} // fin de for
-//		bloqueoJuego.lock(); // bloquea el juego para avisar al subproceso del jugador X que inicie
-		
-//		bloqueoJuego.lock(); // bloquea el juego para avisar al subproceso del jugador X que inicie
+		bloqueoJuego.lock(); // bloquea el juego para avisar al subproceso del jugador X que inicie
 		
 		try {
-//			jugadoresTexas[ 0 ].establecerSuspendido( false ); // continï¿½a el jugador X
-//			jugadoresCubierto[ 0 ].establecerSuspendido( false );
-			
+			jugadores[ 0 ].establecerSuspendido( false ); // continï¿½a el jugador X
+			otroJugadorConectado.signal(); // despierta el subproceso del jugador X
 		} // fin de try
 		finally{
-//		bloqueoJuego.unlock(); // desbloquea el juego despuï¿½s de avisar al jugador X
+			bloqueoJuego.unlock(); // desbloquea el juego despuï¿½s de avisar al jugador X
 		}
 		
 	}
 	
 	
 	
-	public boolean turnos( int x, int y, int jugador, Jugador jugadores[], int jugadorActual) 
+	public boolean turnos( int x, int y, int jugador) 
 	{
 		boolean resultado = false;
 		// mientras no sea el jugador actual, debe esperar su turno
@@ -187,9 +142,7 @@ public class ServidorBuscaminas {
 //	            jugadorActual = ( jugadorActual + 1 ) % 2; // camb		aux="";ia el jugador
 
 	            // permite al jugador saber que se realiz� un movimiento
-				
-				
-	            
+	            jugadores[ jugadorActual ].otroJugadorMovio( x,y );
 	            	    
 	            bloqueoJuego.lock(); // bloquea el juego para indicar al otro jugador que realice su movimiento
 	            
@@ -202,7 +155,7 @@ public class ServidorBuscaminas {
 	        
 				resultado = true;
 			}
-			
+				
 		
 		
 		if (  (tablero[x][y].getTipo() == 7))
@@ -214,23 +167,16 @@ public class ServidorBuscaminas {
 	//           
 				int contador = jugadores[jugadorActual].getMarcador();
 			 	aux += Integer.toString(x)+Integer.toString(y);
-			 	 
-			 	cuentaTurno = jugadorActual;
-		            
-				 	for (int i = 0;i < 3;i++)
-		        	{
-				 		cuentaTurno = ( cuentaTurno + 1 ) % 4;
-		        		jugadores[cuentaTurno].otroJugadorMovio(x,y,jugadores,jugadorActual);
-		        		
-		        		System.out.println("cambio"+" "+cuentaTurno);
-		        	}
+			 	
+	            
+	            jugadores[ jugadorActual ].otroJugadorMovio(x,y);
 	           
 	            jugadores[jugadorActual].setMarcador(contador += 1);
-	     
+	            System.out.println(contador);
 	            bloqueoJuego.lock(); // bloquea el juego para indicar al otro jugador que realice su movimiento
 	            
 	            try {
-	                turnoOtroJugador.signal(); // indica al otro jugador que debe con7tinuar
+	                turnoOtroJugador.signal(); // indica al otro jugador que debe continuar
 	            } 
 	            finally {
 	                bloqueoJuego.unlock(); // desbloquea el juego despues de avisar
@@ -245,23 +191,11 @@ public class ServidorBuscaminas {
         {
         	tablero[x][y].setEstado(1);
         	
-        	
-        	 cuentaTurno = jugadorActual;
-            
-		 	for (int i = 0;i < 3;i++)
-        	{
-		 		cuentaTurno = ( cuentaTurno + 1 ) % 4;
-        		jugadores[cuentaTurno].otroJugadorMovio(x,y,jugadores,jugadorActual);
-        		
-        		System.out.println("cambio"+" "+cuentaTurno);
-        	}
-		 	
-		 	 jugadorActual = ( jugadorActual + 1 ) % 4;
-        	
-            // camb		aux="";ia el jugador
-            System.out.println(jugadorActual);
+//            tablero[ ubicacion ] = MARCAS[ jugadorActual ]; // establece el movimiento en el tablero
+            jugadorActual = ( jugadorActual + 1 ) % 2; // camb		aux="";ia el jugador
+
             // permite al jugador saber que se realiz� un movimiento
-            
+            jugadores[ jugadorActual ].otroJugadorMovio( x,y );
             	    
             bloqueoJuego.lock(); // bloquea el juego para indicar al otro jugador que realice su movimiento
             
@@ -284,18 +218,6 @@ public class ServidorBuscaminas {
 		
 }
 
-	public void repartirJugadores(Jugador jugador)
-	{
-		if(jugador.tipoJuego == 1)
-		{
-			for(int i = 0; i<jugadoresTexas.length;i++)
-			{
-				
-			}
-				
-		}
-	}
-	
 	
 	public boolean validarYMover(int x, int y)
 	{
@@ -333,8 +255,7 @@ public class ServidorBuscaminas {
 		private Formatter salida; // salida al cliente
 		private int numeroJugador; // identifica al Jugador
 		private boolean suspendido = true; // indica si el subproceso estï¿½ suspendido
-		private int tipoJuego;
-		
+		private ServidorBuscaminas servidor;
 		private int marcador;
 	
 
@@ -345,7 +266,7 @@ public class ServidorBuscaminas {
 		
 		public Jugador (Socket socket)
 		{
-			tipoJuego = 0;
+			
 			casillaAux = new Casilla();
 			conexion = socket;
 			posX = 0;
@@ -361,23 +282,7 @@ public class ServidorBuscaminas {
 			}
 		}
 		
-		public void acomodarJugador()
-		{
-			if(tipoJuego == 1)
-			{
-				jugadoresTexas[contador1] = this;
-				contador1++;
-				
-			}
-			
-			else if(tipoJuego == 2)
-			{
-				jugadoresCubierto[contador2] = this;
-				contador2++;
-			}
-		}
-		
-		public void otroJugadorMovio(int x, int y,Jugador jugadores[],int jugadorActual)
+		public void otroJugadorMovio(int x, int y)
 		{
 			if(terminarJuego() == true 
 					&& jugadores[jugadorActual].getMarcador()!=13)
@@ -409,12 +314,7 @@ public class ServidorBuscaminas {
 		
 
 			try{
-				
-				tipoJuego = entrada.nextInt();
-				System.out.println(tipoJuego);
-				acomodarJugador();
 				salida.format("%s\n",Integer.toString(numeroJugador));
-				System.out.println(numeroJugador);
 				salida.flush();
 				
 				for(int i = 0; i<10;i++)
@@ -429,7 +329,7 @@ public class ServidorBuscaminas {
 				aux= "";
 				salida.flush();
 			
-				if ( numeroJugador == 0 ||  numeroJugador == 0 )
+				if ( numeroJugador == 0 )
 				{
 					salida.format("eres el jugador 1\n" );
 					salida.flush();
@@ -446,8 +346,7 @@ public class ServidorBuscaminas {
 					finally {
 						bloqueoJuego.unlock(); // desbloquea el juego 
 					} // fin de finally
-					
-					
+		
 					//envï¿½a un mensaje que ind1ica que el otro jugador se conectï¿½
 					salida.format( "El otro jugador se conecto. Ahora es su turno.\n" );
 					salida.flush(); // vacï¿½a la salida
@@ -462,16 +361,13 @@ public class ServidorBuscaminas {
 			{
 				
 					try{
-						if(tipoJuego == 1)
-						{
 						if(entrada.hasNext())
-							{
-								
-								aux += entrada.nextLine();
-								System.out.print(aux);
-								posX = Integer.parseInt(String.valueOf(aux.charAt(aux.length()-2)));
-								posY = Integer.parseInt(String.valueOf(aux.charAt(aux.length()-1)));
-							}
+						{
+							
+							aux += entrada.nextLine();
+							
+							posX = Integer.parseInt(String.valueOf(aux.charAt(aux.length()-2)));
+							posY = Integer.parseInt(String.valueOf(aux.charAt(aux.length()-1)));
 						}
 					}catch(IllegalStateException e){
 						
@@ -479,28 +375,15 @@ public class ServidorBuscaminas {
 						salida.flush();
 					}
 					
-					if(tipoJuego == 1)
+					
+					if(turnos(posX,posY,numeroJugador))
 					{
-						if(turnos(posX,posY,numeroJugador,jugadoresTexas,jugadorActualTexas))
-						{
-							salida.format("Jugador ha movido\n");
-							salida.flush();
-							
-							salida.format("%s\n",aux);
-							salida.flush();
-						}
+						salida.format("Jugador ha movido\n");
+						salida.flush();
+						
+						salida.format("%s\n",aux);
+						salida.flush();
 					}
-					else if(tipoJuego == 2)
-					{
-						if(turnos(posX,posY,numeroJugador,jugadoresCubierto,jugadorActualCubierto))
-						{
-							salida.format("Jugador ha movido\n");
-							salida.flush();
-							
-							salida.format("%s\n",aux);
-							salida.flush();
-						}
-					} 
 					else
 					{
 						salida.format("movimiento invalido\n");
@@ -513,13 +396,13 @@ public class ServidorBuscaminas {
 				try {
 					
 					if (terminarJuego() == true 
-							&& jugadores[jugadorActualTexas].getMarcador() ==5)
+							&& jugadores[jugadorActual].getMarcador() ==5)
 					{
 						
 						salida.format( "Has ganado!!" );
-				 	 	jugadorActualTexas = ( jugadorActualTexas + 1 ) % 2;
+				 	 	jugadorActual = ( jugadorActual + 1 ) % 2;
 				 	 	System.out.println(aux);
-			            jugadores[ jugadorActualTexas ].otroJugadorMovio(posX,posY,jugadoresTexas,jugadorActualTexas);
+			            jugadores[ jugadorActual ].otroJugadorMovio(posX,posY);
 						salida.flush();
 					}
 					conexion.close(); // cierra la conexiï¿½n con el cliente
@@ -559,64 +442,10 @@ public class ServidorBuscaminas {
 		public void setMarcador(int marcador) {
 			this.marcador = marcador;
 		}
-		
-		public int getTipoJuego() {
-			return tipoJuego;
-		}
-
-		public void setTipoJuego(int tipoJuego) {
-			this.tipoJuego = tipoJuego;
-		}
-
 
 	}
 		
 
-	public class ControlJuego implements Runnable
-	{
-		
-		Jugador[] jugadorLocal;
-		
-	
-		public ControlJuego()
-		{
-			jugadorLocal = new Jugador[4];
-			
-		}
-
-		@Override
-		public void run() 
-		{
-	
-			
-			bloqueoJuego.lock(); // bloquea el juego para avisar al subproceso del jugador X que inicie
-			
-			try {
-				jugadorLocal[ 0 ].establecerSuspendido( false ); // continï¿½a el jugador X
-				otroJugadorConectado.signal(); // despierta el subproceso del jugador X
-			} // fin de try
-			finally{
-				bloqueoJuego.unlock(); // desbloquea el juego despuï¿½s de avisar al jugador X
-			}
-			
-		
-			
-		
-		}
-		
-		
-		
-	
-		
-		public Jugador[] getJugadorLocal() {
-			return jugadorLocal;
-		}
-		
-		public void setJugadorLocal(Jugador[] jugadorLocal) {
-			this.jugadorLocal = jugadorLocal;
-		}
-
-	}
 	
 
 }

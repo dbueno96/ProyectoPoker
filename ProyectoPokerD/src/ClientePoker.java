@@ -339,11 +339,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	
 		System.out.println(codigo);
 		
-<<<<<<< HEAD
 		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mÃ­nima.
-=======
-		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mínima.
->>>>>>> origin/master
 		{
 			int auxInt= 0; 
 			miTurno = true;
@@ -372,20 +368,12 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			setDineroRestante(auxInt);
 		}
 		
-<<<<<<< HEAD
 		else if (codigo.equals("4")) // cÃ³digo para recibir confirmaciÃ³n de que la apuesta enviada al server es vÃ¡lida.
-=======
-		else if (codigo.equals("4")) // código para recibir confirmación de que la apuesta enviada al server es válida.
->>>>>>> origin/master
 		{
 			miTurno = false; 
 			mostrarMensaje("Apuesta VÃ¡lida\n");
 		}
-<<<<<<< HEAD
 		else if (codigo.equals("5")) //cÃ³digo para recibir info de que la apuesta enviada al server NO es vÃ¡lida.
-=======
-		else if (codigo.equals("5")) //código para recibir info de que la apuesta enviada al server NO es válida.
->>>>>>> origin/master
 		{
 			miTurno = true; 
 			mostrarMensaje("Apuesta No VÃ¡lida, Intenta de Nuevo  \n");
@@ -399,7 +387,6 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			dineroApostado = entrada.nextInt(); 
 			System.out.println("dineroA:" + dineroApostado);
 		}
-<<<<<<< HEAD
 		
 		else if(codigo.equals("El otro jugador movio, es tu turno") )
 		{
@@ -411,7 +398,12 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				
 				
 		}
-		
+		else if (codigo.equals("movimiento invalido"))
+		{
+			
+			mostrarMensaje(codigo);
+			miTurno=true;
+		}
 		else if(codigo.equals("El otro jugador se conecto. Ahora es su turno."))
 		{
 			mostrarMensaje(codigo);
@@ -419,12 +411,10 @@ public class ClientePoker extends JFrame  implements  Runnable{
 
 		else if(codigo.equals("eres el jugador:"))
 		{
-			mostrarMensaje(codigo+" "+miIdentidad);
+			mostrarMensaje(codigo+" "+ (Integer.parseInt(miIdentidad)+1));
 		}
 		
 		
-=======
->>>>>>> origin/master
 		else if (codigo.equals("7")) //oara iniciar la fase de Descarte
 		{
 			miTurno = true; 
@@ -454,13 +444,15 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			mostrarMensaje ("eres el jugador 1"); 
 		}
 			
+		else 
+			mostrarMensaje(codigo);
 		
 	}
 	
 	private void mostrarMensaje( final String mensajeAMostrar ){
 		SwingUtilities.invokeLater( new Runnable() {
 										 public void run() {
-											campoDeTexto.append( mensajeAMostrar ); // actualiza la salida
+											campoDeTexto.append( mensajeAMostrar+"\n" ); // actualiza la salida
 										 } // fin del mï¿½todo run
 									 } // fin de la clase interna
 								  ); // fin de la llamada a SwingUtilities.invokeLater
@@ -570,7 +562,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    private JLabel cartas3;
 	    private JLabel[] cartasCentro;
 	   // private JTextArea campoDeTexto; 
-	    private JLabel panelTexto;
+	    private JPanel panelTexto;
 	    
 		private ImageIcon imagen1 = new ImageIcon( "Imagenes/fondo.png");		//imagen fondo
 		private ImageIcon imagenEscala1 = new ImageIcon(imagen1.getImage().getScaledInstance(1200, 800, java.awt.Image.SCALE_DEFAULT));
@@ -587,32 +579,32 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    	
 	    	
 	        
-	        panelTexto = new JLabel(); 
+	        panelTexto = new JPanel(); 
 	        panelTexto.setVisible(true);
-	        panelTexto.setBounds(100,10,270, 170);
+	        //panelTexto.setBounds(100,10,270, 170);
 	        panelTexto.setBackground(Color.WHITE);
 	        panelTexto.setForeground(Color.ORANGE);
-	        this.add(panelTexto);
+	      
 	        
 	        
 	        
-	        campoDeTexto = new JTextArea(4,30); 
+	        campoDeTexto = new JTextArea(20,40); 
 			campoDeTexto.setEditable(false);
 		
-			campoDeTexto.setBounds(0, 0, 420, 170);
+//			campoDeTexto.setBounds(0, 0, 420, 170);
 			campoDeTexto.setBackground(Color.LIGHT_GRAY);// new java.awt.Color(220,220,220
 			campoDeTexto.setVisible(true);
 			campoDeTexto.setEditable(false);
 			campoDeTexto.append("HOLA");
 			//this.add(campoDeTexto);
-			
-			JScrollPane scroll = new JScrollPane(campoDeTexto);
-			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-			
-
-			panelTexto.setLayout(null);
+		//	panelTexto.setLayout(null);
 			panelTexto.add(campoDeTexto);
-			panelTexto.add(scroll);
+		JScrollPane scroll = new JScrollPane(panelTexto);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setBounds(100,10,270, 170);
+			
+			this.add(scroll);
+//			panelTexto.add(scroll);
 	    	
 			//Cartas Centro
 			if(mesaDeJuego == 1)
@@ -763,6 +755,8 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
 	       
+	    	if(miTurno)
+	    	{
 	    	if( e.getSource() == botonSubirApuesta )
 			{
 	    		mostrarMensaje ("CLICK \n"); 
@@ -782,7 +776,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				mostrarMensaje("Has Apostado " + valorApuesta +"\n");
 				mostrarMensaje("Turno Finalizado\n");
 				setDineroRestante(valorApuesta);  // resta el valor apostado al dinero restante
-				salida.format("oiga, por favor\n");
+				
 				salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
 				salida.flush() ; 
 				System.out.println("Apuesta: "  + valorApuesta);
@@ -841,6 +835,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    			
 	    			
 	    			
+	    	}
 	    	}
 	        
 	    }
