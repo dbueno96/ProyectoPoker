@@ -339,7 +339,11 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	
 		System.out.println(codigo);
 		
+<<<<<<< HEAD
 		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mÃ­nima.
+=======
+		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mínima.
+>>>>>>> origin/master
 		{
 			int auxInt= 0; 
 			miTurno = true;
@@ -368,12 +372,20 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			setDineroRestante(auxInt);
 		}
 		
+<<<<<<< HEAD
 		else if (codigo.equals("4")) // cÃ³digo para recibir confirmaciÃ³n de que la apuesta enviada al server es vÃ¡lida.
+=======
+		else if (codigo.equals("4")) // código para recibir confirmación de que la apuesta enviada al server es válida.
+>>>>>>> origin/master
 		{
 			miTurno = false; 
 			mostrarMensaje("Apuesta VÃ¡lida\n");
 		}
+<<<<<<< HEAD
 		else if (codigo.equals("5")) //cÃ³digo para recibir info de que la apuesta enviada al server NO es vÃ¡lida.
+=======
+		else if (codigo.equals("5")) //código para recibir info de que la apuesta enviada al server NO es válida.
+>>>>>>> origin/master
 		{
 			miTurno = true; 
 			mostrarMensaje("Apuesta No VÃ¡lida, Intenta de Nuevo  \n");
@@ -387,6 +399,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			dineroApostado = entrada.nextInt(); 
 			System.out.println("dineroA:" + dineroApostado);
 		}
+<<<<<<< HEAD
 		
 		else if(codigo.equals("El otro jugador movio, es tu turno") )
 		{
@@ -410,6 +423,8 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		}
 		
 		
+=======
+>>>>>>> origin/master
 		else if (codigo.equals("7")) //oara iniciar la fase de Descarte
 		{
 			miTurno = true; 
