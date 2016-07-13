@@ -11,7 +11,7 @@ public class Menu extends JFrame implements MouseListener{
 	private Container contenedor;
     private JLabel titulo;
     private JLabel imagenTexas;
-    private JLabel imagenPoker;
+    private JLabel imagenPoker; 
 	private JButton texas;
 	private JButton poker;
 	private BorderLayout organizadorBorde;
@@ -81,11 +81,16 @@ public class Menu extends JFrame implements MouseListener{
 	@Override
 	public void mouseClicked(MouseEvent arg0) 
 	{
+		
 		if(arg0.getSource() == texas )
 		{
-			ClientePoker interfaz = new ClientePoker(nombreHost, 1);
-			interfaz.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			this.dispose();
+			for (int i = 0; i < 4; i++) {
+				
+				ClientePoker interfaz = new ClientePoker(nombreHost, 1);
+				interfaz.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				this.dispose();
+			}
+			
 		}
 		if(arg0.getSource() == poker )
 		{

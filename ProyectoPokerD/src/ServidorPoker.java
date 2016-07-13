@@ -164,6 +164,7 @@ public class ServidorPoker {
 		
 			if( (jugadores[jugadorActual].getJugada() !=  0))
 			{
+				jugadores[jugadorActual].setJugada(0);
 				
 				for (int i = 0;i < 3;i++)
 	        	{
@@ -359,11 +360,10 @@ public class ServidorPoker {
 			}
 			else
 			{
-				aux+= Integer.toString(x)+Integer.toString(y);
+				System.out.println(this.getJugada());
 				salida.format("El otro jugador movio, es tu turno\n");
 				salida.flush();
-				salida.format("%s\n",aux);
-				salida.flush();
+				
 			}
 	
 		}
@@ -482,7 +482,7 @@ public class ServidorPoker {
 					if(tipoJuego==1 )
 					{
 						try{
-							salida.format("eres el jugador 1\n" );
+							salida.format("9\n");//eres el jugador 1
 							salida.flush();
 							bloqueoJuego.lock(); // bloquea el juego para esperar al segundo jugador
 							
@@ -502,7 +502,7 @@ public class ServidorPoker {
 					else if(tipoJuego==2 )
 					{
 						try{
-							salida.format("eres el jugador 1\n" );
+							salida.format("9\n");
 							salida.flush();
 							bloqueoJuego.lock(); // bloquea el juego para esperar al segundo jugador
 							
@@ -518,6 +518,7 @@ public class ServidorPoker {
 							bloqueoJuego.unlock(); // desbloquea el juego 
 						} // fin de finally
 					}
+				
 					
 					
 					salida.format( "El otro jugador se conecto. Ahora es su turno.\n" );
@@ -525,27 +526,38 @@ public class ServidorPoker {
 					}// fin de if
 					else
 					{
-						salida.format( "Eres el jugador" +numeroJugador+ ", por favor espere\n" );
+						salida.format("eres el jugador:\n" );
+						//envía el numero de jugador para identificarlo 
 						salida.flush(); // vacï¿½a la salida
 					} 
 				
 			// fin de else
 			while(!terminarJuego())
 			{
-				
-					try{
-						
+			try
+			{
 						if(entrada.hasNext())
 							{
+							
+//							String arroz = "";
+//							arroz = entrada.nextLine();
+							posX = entrada.nextInt();
+//							System.out.println("luiseselmejor:" + );
+
+							System.out.println("luiseselmejor2:" + posX);
 							
 								if(tipoJuego == 1)
 								{
 									
+//									contador++;
+//									auxTexas = entrada.nextLine();
+//									System.out.println("CARIMOR:"+auxTexas);
 									
-									auxTexas += entrada.nextLine();
-//									System.out.print(auxTexas);
-//									posX = Integer.parseInt(String.valueOf(auxTexas.charAt(auxTexas.length()-2)));
-//									posY = Integer.parseInt(String.valueOf(auxTexas.charAt(auxTexas.length()-1)));
+//									posX = Integer.parseInt(auxTexas);
+									
+									jugadores[jugadorActualTexas].setJugada(posX);
+									System.out.println("cariii"+contador+auxTexas);
+									//auxTexas = "";
 								}
 								
 								if(tipoJuego == 2)
@@ -567,11 +579,12 @@ public class ServidorPoker {
 					{
 						if(turnos(posX,posY,numeroJugador,jugadoresTexas,jugadorActualTexas,auxTexas))
 						{
+							jugadores[jugadorActualTexas].setJugada(0);
+							
 							salida.format("Jugador ha movido\n");
 							salida.flush();
 							
-							salida.format("%s\n",auxTexas);
-							salida.flush();
+							
 						}
 					}
 					else if(tipoJuego == 2)

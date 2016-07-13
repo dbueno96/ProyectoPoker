@@ -28,7 +28,7 @@ import javax.swing.SwingUtilities;
 
 
 
-public class ClientePoker extends JFrame implements Runnable, MouseListener  {
+public class ClientePoker extends JFrame  implements  Runnable{
 
 	 JTextArea campoDeTexto; 
 	private JTextField tField;
@@ -154,7 +154,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 //		holdem = new JLabel(); 
 //		holdem.setText("JUGAR MODO TEXAS HOLD'EM");
 //		panelInterior.add(holdem, BorderLayout.WEST);
-//		poner tamañoss
+//		poner tamaÃ±oss
 //		cover = new JLabel(); 
 //		cover.setText("JUGAR MODO POKER CUBIERTO");
 //		panelInterior.add(cover, BorderLayout.EAST);
@@ -264,9 +264,9 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 		salida.format("%d\n", mesaDeJuego);
 		salida.flush();
 		miIdentidad = entrada.nextLine();
-		System.out.println(miIdentidad);
+		//System.out.println(miIdentidad);
 		cartasRecibidas = entrada.nextLine();
-		System.out.println(cartasRecibidas);
+		//System.out.println(cartasRecibidas);
 		if(mesaDeJuego == 1)
 		{
 			recibirCartas(7);
@@ -276,16 +276,17 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			recibirCartas(5);
 		}
 		miTurno = (miIdentidad.equals("0"));
+		
 //		int mensaje = -1; 
 //		if(entrada.hasNextInt())
 //			mensaje = entrada.nextInt();
 //		
-//		if (mensaje == 0) // el primer mensaje que recibe es el de aceptación o rechazo en una mesa 
+//		if (mensaje == 0) // el primer mensaje que recibe es el de aceptaciÃ³n o rechazo en una mesa 
 //		{
-//			mostrarMensaje("LA MESA QUE DESEAS SE ENCUENTRA LLENA! \n INTENTA DE NUEVO MÁS TARDE O PRUEBA OTRA OPCIÓN \n");
+//			mostrarMensaje("LA MESA QUE DESEAS SE ENCUENTRA LLENA! \n INTENTA DE NUEVO MÃ�S TARDE O PRUEBA OTRA OPCIÃ“N \n");
 //			
 //		}
-//		else  // si es aceptado, también recibo un tipo de mesa y una posicion en la mesa para el cliente.
+//		else  // si es aceptado, tambiÃ©n recibo un tipo de mesa y una posicion en la mesa para el cliente.
 //		{
 //			mesaDeJuego = entrada.nextInt(); 
 //			posicionEnMesa = entrada.nextInt(); 
@@ -295,8 +296,8 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 	
 		while (true)
 		{
-//			if(entrada.hasNextInt() )
-//				procesarMensaje(entrada.nextInt() );
+			if(entrada.hasNextLine() )
+				procesarMensaje(entrada.nextLine() );
 		}
 //
 	}
@@ -330,21 +331,15 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			
 		}
 		
-		for(int i=0; i<num; i++)
-		{
-			
-				System.out.print( cartasMano[i].getNumero()+ "  "+cartasMano[i].getPalo());
-			
-			System.out.println();
-		}
+		
 	}
 
-	public void procesarMensaje (int codigo)
+	public void procesarMensaje (String codigo)
 	{
 	
+		System.out.println(codigo);
 		
-		
-		if(codigo == 0) //codigo para recibir el valor de apuesta a igualar, o apuesta mínima.
+		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mÃ­nima.
 		{
 			int auxInt= 0; 
 			miTurno = true;
@@ -352,13 +347,13 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			setValorApuesta(auxInt);
 		}
 		
-		else if(codigo == 1 ) //codigo para recibir un STRING para mostrar en el area de texto 
+		else if(codigo.equals("1") ) //codigo para recibir un STRING para mostrar en el area de texto 
 		{
 			String auxString = "";
 			auxString = entrada.nextLine();
 			mostrarMensaje(auxString);  
 		}
-		else if(codigo == 2) //Codigo para recibe mensajes de String del cliente con la mano ganadora 
+		else if(codigo.equals("2")) //Codigo para recibe mensajes de String del cliente con la mano ganadora 
 		{
 			String auxString = entrada.nextLine(); //string con la mano ganadora
 			entrada.nextInt () ;
@@ -366,24 +361,24 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			mostrarMensaje("Gana el jugador " + auxInt + " con :" + auxString+ "\n" ) ; 
 			activoEnRonda = true; 
 		}
-		else if (codigo == 3) //codigo para recibir monto cuando se gana la partida
+		else if (codigo.equals("3")) //codigo para recibir monto cuando se gana la partida
 		{
 			int auxInt = entrada.nextInt(); 
 			
 			setDineroRestante(auxInt);
 		}
 		
-		else if (codigo == 4) // código para recibir confirmación de que la apuesta enviada al server es válida.
+		else if (codigo.equals("4")) // cÃ³digo para recibir confirmaciÃ³n de que la apuesta enviada al server es vÃ¡lida.
 		{
 			miTurno = false; 
-			mostrarMensaje("Apuesta Válida\n");
+			mostrarMensaje("Apuesta VÃ¡lida\n");
 		}
-		else if (codigo == 5) //código para recibir info de que la apuesta enviada al server NO es válida.
+		else if (codigo.equals("5")) //cÃ³digo para recibir info de que la apuesta enviada al server NO es vÃ¡lida.
 		{
 			miTurno = true; 
-			mostrarMensaje("Apuesta No Válida, Intenta de Nuevo  \n");
+			mostrarMensaje("Apuesta No VÃ¡lida, Intenta de Nuevo  \n");
 		}
-		else if (codigo == 6) //para recibir el dinero restante y lo apostado hasta el momento en la mano actual,.
+		else if (codigo.equals("6")) //para recibir el dinero restante y lo apostado hasta el momento en la mano actual,.
 		{
 			int aux = 0; 
 			
@@ -392,7 +387,30 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			dineroApostado = entrada.nextInt(); 
 			System.out.println("dineroA:" + dineroApostado);
 		}
-		else if (codigo == 7) //oara iniciar la fase de Descarte
+		
+		else if(codigo.equals("El otro jugador movio, es tu turno") )
+		{
+			
+			
+		
+				mostrarMensaje(codigo);
+				miTurno = true;
+				
+				
+		}
+		
+		else if(codigo.equals("El otro jugador se conecto. Ahora es su turno."))
+		{
+			mostrarMensaje(codigo);
+		}
+
+		else if(codigo.equals("eres el jugador:"))
+		{
+			mostrarMensaje(codigo+" "+miIdentidad);
+		}
+		
+		
+		else if (codigo.equals("7")) //oara iniciar la fase de Descarte
 		{
 			miTurno = true; 
 			faseDescarte = true;
@@ -400,7 +418,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			
 			
 		}
-		else if (codigo == 8) //para finalizar la fase de descarte
+		else if (codigo.equals("8")) //para finalizar la fase de descarte
 		{
 			faseDescarte = false; 
 			
@@ -414,6 +432,12 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 			}
 			miTurno = false;
 		}
+		
+		else if (codigo.equals("9")) //para finalizar la fase de descarte
+		{
+			System.out.println("holiiiii");
+			mostrarMensaje ("eres el jugador 1"); 
+		}
 			
 		
 	}
@@ -422,55 +446,13 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 		SwingUtilities.invokeLater( new Runnable() {
 										 public void run() {
 											campoDeTexto.append( mensajeAMostrar ); // actualiza la salida
-										 } // fin del m�todo run
+										 } // fin del mï¿½todo run
 									 } // fin de la clase interna
 								  ); // fin de la llamada a SwingUtilities.invokeLater
-	} // fin del m�todo mostrarMensaje
+	} // fin del mï¿½todo mostrarMensaje
+
 
 	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-//		
-//		if (  e.getSource() == holdem)
-//		{
-//			int a = 0;
-//			salida.format("%d\n", a);
-//			salida.flush();
-//		}
-//		else if (e.getSource() == cover)
-//		{
-//			int a = 1 ; 
-//			salida.format("%d\n", a);
-//			salida.flush();
-//		}
-	}
-	
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-		
-		
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	
 	private class Carta extends JLabel 
@@ -769,7 +751,7 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 	    	if( e.getSource() == botonSubirApuesta )
 			{
 	    		mostrarMensaje ("CLICK \n"); 
-				//setValorApuesta(10);
+				setValorApuesta(10);
 			}
 			else if (e.getSource() == botonBajarApuesta)
 			{
@@ -779,12 +761,15 @@ public class ClientePoker extends JFrame implements Runnable, MouseListener  {
 
 			else if(e.getSource() == botonApostar)
 			{
-//				salida.format("%d\n", valorApuesta); //lee del socket el valor de apuesta mínima 
+				
+//				salida.format("%d\n", valorApuesta); //lee del socket el valor de apuesta mÃ­nima 
 //				salida.flush(); 
 				mostrarMensaje("Has Apostado " + valorApuesta +"\n");
 				mostrarMensaje("Turno Finalizado\n");
 				setDineroRestante(valorApuesta);  // resta el valor apostado al dinero restante
-				
+				salida.format("oiga, por favor\n");
+				salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
+				salida.flush() ; 
 				System.out.println("Apuesta: "  + valorApuesta);
 				miTurno = false; 
 			}
