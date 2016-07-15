@@ -780,6 +780,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
 				salida.flush() ; 
 				System.out.println("Apuesta: "  + valorApuesta);
+				valorApuesta = 0; 
 				miTurno = false; 
 			}
 			else if(e.getSource() == botonRetirarse)
