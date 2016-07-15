@@ -646,7 +646,35 @@ public class ServidorPoker {
 			
 		}	
 	
-		
+		 public void setPuntajeMano()
+		{
+			//metodo de ordenar manos
+			if (controlJuego.hayEscaleraReal (cartas) ) 
+				puntajeJugada = 10000 ; 
+			
+			else if (controlJuego.hayEscaleraColor(cartas) )
+				puntajeJugada = 9000 ;
+			
+			else if (controlJuego.hayPoker(cartas))
+				puntajeJugada = 8000 ;
+			
+			else if (controlJuego.hayFull (cartas))
+				puntajeJugada = 7000;
+			else if (controlJuego.hayColor(cartas))
+				puntajeJugada = 6000;
+			else if(controlJuego.hayEscalera (cartas))
+				puntajeJugada = 5000; 
+			else if (controlJuego.hayTrio (cartas))
+				puntajeJugada = 4000; 
+			else if (controlJuego.hayDoblePareja (cartas))
+				puntajeJugada = 3000; 
+			else if (controlJuego.hayPar(cartas))
+				puntajeJugada = 2000; 
+			
+			 
+			puntajeJugada += cartas[cartas.length].getNumero() ; 
+				
+		}
 
 		public int getNumeroJugador() {
 			return numeroJugador;
