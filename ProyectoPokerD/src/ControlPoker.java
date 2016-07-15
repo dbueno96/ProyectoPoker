@@ -84,5 +84,169 @@ public class ControlPoker {
 	
 	
 	
+	public boolean hayEscalera(Carta[] mano) 
+	{
+		int contador = 1; 
+		int cartaAlta = 0; 
+		
+		for (int i = 0 ; i < mano.length-1 ; i ++)
+		{
+			if(mano[i].getNumero()+1  == mano[i+1].getNumero()  ) 
+			{
+				contador ++;
+				
+				if(contador >= 5 )
+				{
+					cartaAlta = mano[i+1].getNumero();
+				}
+			}
+		}
+		
+		if (contador >= 5)
+		{
+			return true; 
+		}
+		else 
+			return false; 
+	}
+
+	public boolean hayColor(Carta[] mano)
+	{
+		int contador = 0; 
+		int cartaAlta = 0; 
+		
+		for (int i = 0 ; i < mano.length-1 ; i ++)
+		{	
+			contador = 0; 
+			for (int j = 0; j < mano.length -1 ; j ++)
+			{
+				if(mano[i].getPalo() == mano[j].getPalo() )
+				{
+					contador ++;
+					
+					if (contador >= 20 )
+					{	
+						cartaAlta = mano[i+1].getPalo();
+						break;
+					}
+				}
+			}
+		}
+		if(contador  >= 20) 
+		{
+			return true; 
+		}
+		else 
+			return false; 
+	}
+	
+	public int contarRepetidas (Carta[] mano)
+	{
+		int contador = 0; 
+		
+		for (int i = 0 ; i < mano.length ; i++)
+		{
+			for (int j = i; j < mano.length ; j ++)
+			{
+				if (i != j)
+				{
+					if(mano[i].getNumero() == mano[j].getNumero() )
+						contador++;
+				}
+			}
+		}
+		
+		return contador;
+	}
+	
+	public boolean hayPar (Carta[] mano)
+	{
+		if (contarRepetidas (mano) == 1)
+			return true; 
+		else 
+			return false; 
+	}
+	
+	public boolean hayDoblePareja (Carta[] mano) 
+	{
+		if (contarRepetidas (mano) == 2)
+			return true; 
+		else 
+			return false;
+	}
+	
+	public boolean hayTrio (Carta[] mano)
+	{
+		if (contarRepetidas (mano) == 3) 
+			return true; 
+		else 
+			return false; 
+	}
+	
+	public boolean hayFull (Carta[] mano)
+	{
+		if (contarRepetidas (mano) == 4)
+			return true; 
+		else
+			return true; 
+	}
+	
+	public boolean hayPoker(Carta[] mano)
+	{
+		if(contarRepetidas (mano) == 6 ) 
+			return true; 
+		else
+			return true; 
+		
+	}
+	
+	
+	public boolean hayEscaleraColor(Carta[] mano)
+	{
+		int contador = 1; 
+		int cartaAlta = 0;
+		for (int i= 0 ; i < mano.length -1 ; i ++)
+		{
+			if (mano[i].getPalo() == mano[i+1].getPalo() 
+				&& mano[i].getNumero()+1 == mano[i+1].getNumero()) 
+			{
+				contador ++; 
+				if(contador >= 5)
+					cartaAlta = mano[i+1].getNumero(); 
+			}
+		}
+		
+		if (contador >= 5)
+			return true; 
+		else 
+			return false; 
+	}
+	
+	public boolean hayEscaleraReal(Carta[] mano)
+	{
+		int contador = 1; 
+		int cartaAlta = 0;
+		for (int i= 0 ; i < mano.length -1 ; i ++)
+		{
+			if(i == 0  && mano[i].getNumero() == 10) 
+			{
+				contador++;
+			}
+			else if (mano[i].getPalo() == mano[i+1].getPalo() 
+				&& mano[i].getNumero()+1 == mano[i+1].getNumero()) 
+			{
+				contador ++; 
+				if(contador >= 5)
+					cartaAlta = mano[i+1].getNumero(); 
+			}
+		}
+		
+		if (contador >= 5)
+			return true; 
+		else 
+			return false; 
+	}
+	
+	
 	
 }
