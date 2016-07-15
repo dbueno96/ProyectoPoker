@@ -776,7 +776,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				mostrarMensaje("Has Apostado " + valorApuesta +"\n");
 				mostrarMensaje("Turno Finalizado\n");
 				setDineroRestante(valorApuesta);  // resta el valor apostado al dinero restante
-				
+					
 				salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
 				salida.flush() ; 
 				System.out.println("Apuesta: "  + valorApuesta);
@@ -794,6 +794,14 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				
 				System.out.println("Jugador "  + posicionEnMesa +"se retira" );
 				
+			}
+			else if (e.getSource() == botonIgualar)
+			{
+				mostrarMensaje("Igualas la apuesta \n"); 
+				salida.format("%d\n", 4);
+				salida.flush(); 
+				salida.format("%d\n", dineroApostado);
+				salida.flush(); 
 			}
 			else if(e.getSource () == botonPasar)
 			{
