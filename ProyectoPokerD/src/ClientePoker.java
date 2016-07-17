@@ -68,6 +68,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	private GridBagConstraints gridBag;
 	private String nombreHost ; 
 
+	private Interfaz go; 
 	
 //	private final int cliente0 = 0;
 //	private final int cliente1 = 1;
@@ -101,7 +102,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 //		tField.setText("JUEGO DE POKER");
 //		add(tField , BorderLayout.NORTH);
 		
-		Interfaz go = new Interfaz() ; 
+		go = new Interfaz() ; 
 		
 //		
 //		campoDeTexto = new JTextArea(4,30); 
@@ -561,6 +562,10 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    private JLabel cartas2;
 	    private JLabel cartas3;
 	    private JLabel[] cartasCentro;
+	    
+	     private JLabel labelApostado; 
+	    private JLabel labelDineroRestante; 
+	    private JLabel labelMonto; 
 	   // private JTextArea campoDeTexto; 
 	    private JPanel panelTexto;
 	    
@@ -707,8 +712,28 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			this.add(botonRetirarse);
 			botonRetirarse.addMouseListener(this);
 			
-			//Descartar
+			//Apostado
 			
+			labelApostado = new JLabel ("Apostado: "+ dineroApostado);
+			labelApostado.setBounds(390,10,90,20);
+			labelApostado.setBackground(new java.awt.Color(30,65,170));
+			labelApostado.setForeground(Color.WHITE);
+			this.add(labelApostado);
+	    
+			//Dinero Restante
+			labelDineroRestante = new JLabel ("Fichas: "+ dineroRestante );
+			labelDineroRestante.setBounds(390,25,90,20);
+			labelDineroRestante.setBackground(new java.awt.Color(30,65,170));
+			labelDineroRestante.setForeground(Color.WHITE);
+			this.add(labelDineroRestante);
+			
+			//Monto
+			
+			labelMonto = new JLabel("Monto: ");
+			labelMonto.setBounds(520,410,70,50);
+			labelMonto.setBackground(new java.awt.Color(30,65,170));
+			labelMonto.setForeground(Color.WHITE);
+			this.add(labelMonto); 
 			
 	    
 	
@@ -733,19 +758,17 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	   
 	    
 	    
-	   public void cambiarIconoCartaFlop()
+	    public void cambiarIconoCarta(int i)
 	   {
 		   
-		   leerFlop(); 
-		   for (int i = 0 ; i < 2 ; i ++)
-		   {		
-			   String palo = String.valueOf(cartasFlop[i].getPalo() );
-			   String numero = String.valueOf(cartasFlop[i].getNumero() );
-			   
+			   String palo = String.valueOf(cartasMano[i].getPalo() );
+			   String numero = String.valueOf(cartasMano[i].getNumero() );
+			   System.out.println("Carpeta: " + palo + "numero:"+ numero); 
 			   ImageIcon aux = new ImageIcon ("imgPoker/" + palo + "/" + numero+ ".jpg");
-			   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(120, 180, java.awt.Image.SCALE_DEFAULT));
+			   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartasCentro[i].getWidth(), cartasCentro[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
+			  
 			   cartasCentro[i].setIcon(auxEscala);
-		   }
+		   
 		   
 		   
 	   }
