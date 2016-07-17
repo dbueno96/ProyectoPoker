@@ -760,14 +760,22 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    
 	    public void cambiarIconoCarta(int i)
 	   {
-		   
-			   String palo = String.valueOf(cartasMano[i].getPalo() );
-			   String numero = String.valueOf(cartasMano[i].getNumero() );
-			   System.out.println("Carpeta: " + palo + "numero:"+ numero); 
-			   ImageIcon aux = new ImageIcon ("imgPoker/" + palo + "/" + numero+ ".jpg");
+	   	 String palo = String.valueOf(cartasMano[i].getPalo() );
+		   String numero = String.valueOf(cartasMano[i].getNumero() );
+		   System.out.println("Carpeta: " + palo + " numero:"+ numero); 
+		   ImageIcon aux = new ImageIcon ("imgPoker/" + palo + "/" + numero+ ".jpg");
+		  
+		   if(i < 2 )
+		   {
+			   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartas[i].getWidth(), cartas[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
+			   cartas[i].setIcon(auxEscala);
+		   }
+		   else if(i >= 2)
+		   {
 			   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartasCentro[i].getWidth(), cartasCentro[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
-			  
-			   cartasCentro[i].setIcon(auxEscala);
+			   cartasCentro[i-2].setIcon(auxEscala);
+		   }
+		   
 		   
 		   
 		   
