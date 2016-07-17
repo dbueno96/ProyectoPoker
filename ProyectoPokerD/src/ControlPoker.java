@@ -62,6 +62,28 @@ public class ControlPoker {
 		}
 	}
 	
+	public void ordenar(Carta[] mano){
+        //Ordenar de las cartas en orden creciente
+        Carta c; 
+        for (int i=0; i< mano.length -1; i++) 
+        {
+            for (int j=i+1; j<mano.length; j++) 
+            {
+                if ( mano[i].getNumero() >mano[j].getNumero() )
+                {
+                    c= new Carta();
+                    c.setPalo(mano[j].getPalo());
+                    c.setNumero(mano[j].getNumero());
+                    
+                    mano[j].setPalo(mano[i].getPalo());
+                    mano[j].setNumero(mano[i].getNumero()); 
+                    
+                    mano[i].setNumero(c.getNumero());
+                    mano[i].setPalo(c.getPalo() );
+                }
+            }
+        }
+	}
 	
 	public Carta[] getMazo1() {
 		return mazo1;
