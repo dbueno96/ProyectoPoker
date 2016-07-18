@@ -52,11 +52,11 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	private Scanner entrada;
 	private Formatter salida; 
 	
-	private boolean miTurno ;
+	private boolean miTurno = false;
 	private int  mesaDeJuego; // lA MESA 1 ES HOLDEM --- LA MESA 2 ES POKER CUBIERTO 
 	private int posicionEnMesa;  //LAS POSICIONES EN LA MESA VAN DE 0 A 3, AYUDA A ADMINISTRAR TURNOS
 	private int valorApuesta;
-	private int dineroRestante; 
+	private int dineroRestante ; 
 	private int dineroApostado; 
 	private int cartasDescartadas;
 	private boolean activoEnRonda; 
@@ -67,6 +67,8 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	private String miIdentidad;
 	private GridBagConstraints gridBag;
 	private String nombreHost ; 
+	
+	private Interfaz go;
 
 	
 //	private final int cliente0 = 0;
@@ -84,16 +86,20 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	public ClientePoker(String host, int tipoDeJuego) 
 	{
 //		super("PROYECTO PI ");
-//		nombreHost = host; 
+		nombreHost = host; 
 //	
 		mesaDeJuego = tipoDeJuego; 
 		cartasRecibidas= "";
 		miIdentidad ="";
-			cartasFlop = new Carta[5];
-			cartasMano = new Carta[7];
+			
+		dineroRestante = 300; 
+		dineroApostado= 0; 
+		valorApuesta = 0; 
+		cartasMano = new Carta[7];
+		
 		for(int i = 0; i<7; i++)
 		{
-			cartasMano[i] = new Carta(0,0);
+			cartasMano[i] = new Carta(1,1);
 		}
 		
 //		tField = new JTextField(); 
@@ -101,7 +107,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 //		tField.setText("JUEGO DE POKER");
 //		add(tField , BorderLayout.NORTH);
 		
-		Interfaz go = new Interfaz() ; 
+		
 		
 //		
 //		campoDeTexto = new JTextArea(4,30); 
@@ -173,7 +179,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		
 		
 	iniciarCliente();
-		
+	go = new Interfaz() ; 
 		
 	}
 
@@ -203,7 +209,17 @@ public class ClientePoker extends JFrame  implements  Runnable{
 
 	public void setValorApuesta(int n)
 	{
-			valorApuesta += n; 
+		int auxValor = valorApuesta; 
+		
+		
+			if(dineroRestante -n < 0)
+				valorApuesta = 0;
+			else if(dineroRestante < valorApuesta)
+				valorApuesta = valorApuesta +0;
+			else 
+				valorApuesta +=n; 
+				
+			
 		
 	}
 	
@@ -240,14 +256,16 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	
 	public void enviarCartasDescarte(int [] posiciones)
 	{
+		salida.format("%d\n", 5);
+		salida.flush(); 
+		
+		String auxPosiciones =""; 
 		for (int i = 0; i < cartasMano.length ; i++ )
 			
 		{
 			if (cartasMano[i].getDescartar())
 			{
-//				salida.format("%d\n", cartasMano[i].getPalo() );
-//				salida.format("%d\n", cartasMano[i].getNumero());
-//				salida.flush();
+				auxPosiciones += Integer.toString(i); 
 			}
 			
 		}
@@ -328,23 +346,33 @@ public class ClientePoker extends JFrame  implements  Runnable{
 				cartasMano[i].setPalo(p);
 				contador++;
 				
+				System.out.println("Recibido: Palo "+ p +"Numero: "+ n);
+				
 			
 		}
 		
 		
 	}
 
+	
+	
 	public void procesarMensaje (String codigo)
 	{
 	
-		System.out.println(codigo);
-		
+//		System.out.println(codigo);
+		mostrarMensaje("codigo " + codigo );
+		mostrarMensaje("\n");
 		if(codigo.equals("0")) //codigo para recibir el valor de apuesta a igualar, o apuesta mÃ­nima.
 		{
 			int auxInt= 0; 
 			miTurno = true;
 			auxInt= entrada.nextInt(); 
 			setValorApuesta(auxInt);
+			if (auxInt == 0)
+				go.igualarPasar(true);
+			else 
+				go.igualarPasar(false);
+			
 		}
 		
 		else if(codigo.equals("1") ) //codigo para recibir un STRING para mostrar en el area de texto 
@@ -391,12 +419,19 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		else if(codigo.equals("El otro jugador movio, es tu turno") )
 		{
 			
-			
-		
-				mostrarMensaje(codigo);
+				mostrarMensaje(codigo );
 				miTurno = true;
 				
+				int aux = entrada.nextInt(); 
+				valorApuesta = aux;  // valor de la apuesta del jugador anterior ( minimo a apostar) 
 				
+				
+		}
+		else if (codigo.equals("actualizar interfaz"))
+		{
+			String aux = entrada.nextLine(); 
+			go.actualizarBote(aux) ; 
+			
 		}
 		else if (codigo.equals("movimiento invalido"))
 		{
@@ -406,6 +441,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		}
 		else if(codigo.equals("El otro jugador se conecto. Ahora es su turno."))
 		{
+			miTurno = true; 
 			mostrarMensaje(codigo);
 		}
 
@@ -413,8 +449,22 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		{
 			mostrarMensaje(codigo+" "+ (Integer.parseInt(miIdentidad)+1));
 		}
-		
-		
+//		else if (codigo.equals("eres el dealer"))
+//		{
+//			mostrarMensaje(codigo + "1\n");
+//			go.setVisibleDealer();
+//		}
+//		else if (codigo.equals("te toca la ciega pequena"))
+//		{
+//			mostrarMensaje(codigo + "2\n"); 
+//			go.setVisibleSmall(); 
+//		}
+//		
+//		else if (codigo.equals("te toca la ciega grande"))
+//		{
+//			mostrarMensaje(codigo + "3\n");
+//			go.setVisibleBig(); 
+//		}
 		else if (codigo.equals("7")) //oara iniciar la fase de Descarte
 		{
 			miTurno = true; 
@@ -422,6 +472,13 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			mostrarMensaje ("Elije las cartas que deseas cambiar \n"); 
 			
 			
+		}
+		else if(codigo.equals( "numero de ronda"))
+		{
+			int aux = entrada.nextInt() ; 
+			
+			//mostrarCartas(aux); 
+					
 		}
 		else if (codigo.equals("8")) //para finalizar la fase de descarte
 		{
@@ -441,7 +498,23 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		else if (codigo.equals("9")) //para finalizar la fase de descarte
 		{
 			System.out.println("holiiiii");
-			mostrarMensaje ("eres el jugador 1"); 
+			mostrarMensaje ("eres el jugador 1");
+			
+//			int auxInt= 0; 
+//			miTurno = true;
+//			auxInt= entrada.nextInt(); 
+//			setValorApuesta(auxInt);
+//			if (auxInt == 0)
+//				go.igualarPasar(true);
+//			else 
+//				go.igualarPasar(false);
+			
+			
+		}
+		else if (codigo.equals("10"))
+		{
+			int auxP = entrada.nextInt();
+			go.cambiarIconoCarta(auxP);
 		}
 			
 		else 
@@ -526,7 +599,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		{
 			if (cartasMano[i].getDescartar () )
 			{
-				
+				contador++;
 			}
 		}
 		
@@ -557,10 +630,19 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	    private JButton botonPasar;
 	    private JButton botonRetirarse;
 	    private JButton botonDescartar; 
+
 	    private JLabel cartas1;
 	    private JLabel cartas2;
 	    private JLabel cartas3;
 	    private JLabel[] cartasCentro;
+	    
+	    private JLabel labelApostado; 
+	    private JLabel labelDineroRestante; 
+	    private JLabel labelMonto; 
+	    private JLabel labelDealer;
+	    private JLabel labelPeque;
+	    private JLabel labelGrande; 
+	    
 	   // private JTextArea campoDeTexto; 
 	    private JPanel panelTexto;
 	    
@@ -571,6 +653,13 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		private ImageIcon imagen3 = new ImageIcon("Imagenes/reves.jpg");		//imagen fondo
 		private ImageIcon imagenEscala3 = new ImageIcon(imagen3.getImage().getScaledInstance(120, 180, java.awt.Image.SCALE_DEFAULT));
 		private ImageIcon imagenEscala33 = new ImageIcon(imagen3.getImage().getScaledInstance(80, 110, java.awt.Image.SCALE_DEFAULT));
+		
+		private ImageIcon imagenBlind = new ImageIcon("Imagenes/ciega-pequena.png"); 
+		private ImageIcon blindEscala = new ImageIcon(imagenBlind.getImage().getScaledInstance(40,40, java.awt.Image.SCALE_DEFAULT));
+		private ImageIcon imagenGrande = new ImageIcon ("Imagenes/ciega-grande.png"); 
+		private ImageIcon grandeEscala = new ImageIcon (imagenGrande.getImage().getScaledInstance(40,40,java.awt.Image.SCALE_DEFAULT));
+		private ImageIcon imagenDealer = new ImageIcon ("Imagenes/dealer.png"); 
+		private ImageIcon dealerEscala = new ImageIcon (imagenDealer.getImage().getScaledInstance(40, 40, java.awt.Image.SCALE_DEFAULT));
 		//	private ImageIcon imagenEscalaX = new ImageIcon(imagen.getImage().getScaledInstance(120, 180, java.awt.Image.SCALE_DEFAULT));
 	
 	
@@ -581,7 +670,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	        
 	        panelTexto = new JPanel(); 
 	        panelTexto.setVisible(true);
-	        //panelTexto.setBounds(100,10,270, 170);
+//	        panelTexto.setBounds(100,10,270, 170);
 	        panelTexto.setBackground(Color.WHITE);
 	        panelTexto.setForeground(Color.ORANGE);
 	      
@@ -591,7 +680,7 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	        campoDeTexto = new JTextArea(20,40); 
 			campoDeTexto.setEditable(false);
 		
-//			campoDeTexto.setBounds(0, 0, 420, 170);
+//			campoDeTexto.setBounds(0, 0, 420, 170);	
 			campoDeTexto.setBackground(Color.LIGHT_GRAY);// new java.awt.Color(220,220,220
 			campoDeTexto.setVisible(true);
 			campoDeTexto.setEditable(false);
@@ -625,23 +714,27 @@ public class ClientePoker extends JFrame  implements  Runnable{
 		        	
 		        	cartas[i] = new JButton();
 		        	cartas[i].setBounds(400+(i*140), 100, 120, 180); // ajusta el tamano y la posicion respecto a la ventana.
-		            cartas[i].setIcon(imagenEscala3);
-		            cartas[i].addMouseListener(this);
+		        	cartas[i].setIcon(imagenEscala3);
+		        	cartas[i].addMouseListener(this);
 		            this.add(cartas[i]);
 				}
+		        cambiarIconoCarta(0);
+	        	cambiarIconoCarta(1);
 			}
 			//Cartas de el jugador
 			else if (mesaDeJuego == 2)
 	    	{
-		    	cartas = new JButton[5];	
+		    	cartas = new JButton[7];	
 		        for(int i =0;i<= 4;i++)
 		        { 
 		        	
 		        	cartas[i] = new JButton();
 		        	cartas[i].setBounds(400+(i*140), 100, 120, 180); // ajusta el tamano y la posicion respecto a la ventana.
 		            cartas[i].setIcon(imagenEscala3);
-		            cartas[i].addMouseListener(this);
+		            cambiarIconoCarta(i);
+		        	cartas[i].addMouseListener(this);
 		            this.add(cartas[i]);
+		            
 		            
 		            botonDescartar = new JButton("DESCARTAR");
 					botonDescartar.setBounds(580, 300, 120, 40);
@@ -649,6 +742,8 @@ public class ClientePoker extends JFrame  implements  Runnable{
 					botonDescartar.setForeground(Color.WHITE);
 					this.add(botonDescartar); 
 					botonDescartar.addMouseListener(this);
+					
+					
 					
 		        }
 	    	}
@@ -707,11 +802,53 @@ public class ClientePoker extends JFrame  implements  Runnable{
 			this.add(botonRetirarse);
 			botonRetirarse.addMouseListener(this);
 			
-			//Descartar
+			//Apostado
 			
-			
+			labelApostado = new JLabel ("Apostado: "+ dineroApostado);
+			labelApostado.setBounds(390,10,90,20);
+			labelApostado.setBackground(new java.awt.Color(30,65,170));
+			labelApostado.setForeground(Color.WHITE);
+			this.add(labelApostado);
 	    
-	
+			//Dinero Restante
+			labelDineroRestante = new JLabel ("Fichas: "+ dineroRestante );
+			labelDineroRestante.setBounds(390,25,90,20);
+			labelDineroRestante.setBackground(new java.awt.Color(30,65,170));
+			labelDineroRestante.setForeground(Color.WHITE);
+			this.add(labelDineroRestante);
+			
+			//Monto
+			
+			labelMonto = new JLabel("Monto: ");
+			labelMonto.setBounds(520,410,70,50);
+			labelMonto.setBackground(new java.awt.Color(30,65,170));
+			labelMonto.setForeground(Color.WHITE);
+			this.add(labelMonto); 
+			
+			
+			//Label Ciega Pequeña 
+			labelPeque = new JLabel("SB"); 
+			labelPeque.setIcon(blindEscala);
+			labelPeque.setBounds(700,620, blindEscala.getIconWidth(), blindEscala.getIconHeight());
+			labelPeque.setForeground(Color.WHITE);
+			labelPeque.setVisible(false);
+			this.add(labelPeque);
+			
+			//label Ciega Grande
+			labelGrande = new JLabel(); 
+			labelGrande.setIcon(grandeEscala); 
+			labelGrande.setBounds(600, 410, grandeEscala.getIconWidth(), grandeEscala.getIconHeight() );
+			labelGrande.setForeground(Color.WHITE);
+			labelGrande.setVisible(false); 
+			this.add(labelGrande);
+			
+			//label Dealer			
+			labelDealer = new JLabel ();
+			labelDealer.setIcon(dealerEscala); 
+			labelDealer.setBounds(600,410,dealerEscala.getIconWidth(), dealerEscala.getIconHeight()); 
+			labelDealer.setForeground(Color.WHITE); 
+			labelDealer.setVisible (false); 
+			this.add(labelDealer);
 			
 	    	//FIN
 	    
@@ -730,113 +867,194 @@ public class ClientePoker extends JFrame  implements  Runnable{
 	        
 	    }
 	    
-	   
 	    
+	  public void setVisibleDealer()
+	  {
+		  SwingUtilities.invokeLater( new Runnable() {
+				 public void run() {
+					
+					 labelDealer.setVisible( !labelDealer.isVisible()); 
+					  // actualiza la salida
+				 } // fin del mï¿½todo run
+			 } // fin de la clase interna
+		  ); //
+		  
+	  }
+	  
+	  public void setVisibleSmall()
+	  {
+		  SwingUtilities.invokeLater( new Runnable() {
+				 public void run() {
+					
+					 labelPeque.setVisible(!labelPeque.isVisible()); 
+					  // actualiza la salida
+				 } // fin del mï¿½todo run
+			 } // fin de la clase interna
+		  ); //
+	  }
+	  
+	  public void setVisibleBig()
+	  {
+		  SwingUtilities.invokeLater( new Runnable() {
+				 public void run() {
+					 
+					 labelGrande.setVisible(!labelGrande.isVisible());
+					  // actualiza la salida
+				 } // fin del mï¿½todo run
+			 } // fin de la clase interna
+		  ); //
+	   }
+	  
+	   public void igualarPasar (boolean a)
+	   {
+		   if (a)
+		   {
+			   botonIgualar.setVisible(false); 
+			   botonPasar.setVisible(true); 
+		   }
+		   else 
+		   {
+			   botonIgualar.setVisible(true);
+		   		botonPasar.setVisible(false);
+		   }
+			   
+	   }
 	    
-	   public void cambiarIconoCartaFlop()
+	   public void actualizarBote(String monto)
+	   {
+		   labelMonto.setText("Monto: " + monto);
+	   }
+	   public void cambiarIconoCarta(int i)
 	   {
 		   
-		   leerFlop(); 
-		   for (int i = 0 ; i < 2 ; i ++)
-		   {		
-			   String palo = String.valueOf(cartasFlop[i].getPalo() );
-			   String numero = String.valueOf(cartasFlop[i].getNumero() );
-			   
+			   String palo = String.valueOf(cartasMano[i].getPalo() );
+			   String numero = String.valueOf(cartasMano[i].getNumero() );
+			   System.out.println("Carpeta: " + palo + " numero:"+ numero); 
 			   ImageIcon aux = new ImageIcon ("imgPoker/" + palo + "/" + numero+ ".jpg");
-			   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(120, 180, java.awt.Image.SCALE_DEFAULT));
-			   cartasCentro[i].setIcon(auxEscala);
-		   }
+			   if(mesaDeJuego == 1)
+			   {
+				   if(i < 2 )
+				   {
+					   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartas[i].getWidth(), cartas[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
+					   cartas[i].setIcon(auxEscala);
+				   }
+				   else if(i >= 2)
+				   {
+					   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartas[i].getWidth(), cartasCentro[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
+					   cartasCentro[i-2].setIcon(auxEscala);
+				   }
+			   }
+			   else if(mesaDeJuego == 2)
+			   {
+				   ImageIcon auxEscala = new ImageIcon (aux.getImage().getScaledInstance(cartas[i].getWidth(), cartas[i].getHeight(), java.awt.Image.SCALE_DEFAULT));
+				   cartas[i].setIcon(auxEscala);
+			   }
 		   
 		   
 	   }
 	
+	   public void actualizarTextoApuesta()
+	   {
+		   botonApostar.setText("APOSTAR " + valorApuesta);
+	   }
 	
 	
 	    @Override
 	    public void mouseClicked(MouseEvent e) {
 	       
 	    	if(miTurno)
-	    	{
-	    	if( e.getSource() == botonSubirApuesta )
-			{
-	    		mostrarMensaje ("CLICK \n"); 
-				setValorApuesta(10);
-			}
-			else if (e.getSource() == botonBajarApuesta)
-			{
-				setValorApuesta(-10);
-				
-			}
-
-			else if(e.getSource() == botonApostar)
-			{
-				
-//				salida.format("%d\n", valorApuesta); //lee del socket el valor de apuesta mÃ­nima 
-//				salida.flush(); 
-				mostrarMensaje("Has Apostado " + valorApuesta +"\n");
-				mostrarMensaje("Turno Finalizado\n");
-				setDineroRestante(valorApuesta);  // resta el valor apostado al dinero restante
-				
-				salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
-				salida.flush() ; 
-				System.out.println("Apuesta: "  + valorApuesta);
-				miTurno = false; 
-			}
-			else if(e.getSource() == botonRetirarse)
-			{
-//				salida.format("%d\n", 3); //CODIGO PARA RETIRARSEr
-//				//salida.format("retirar); 
-//				salida.flush() ; 
-				
-				activoEnRonda = false;
-				mostrarMensaje("Te retiras de la mano en curso.");
-				
-				System.out.println("Jugador "  + posicionEnMesa +"se retira" );
-				
-			}
-			else if(e.getSource () == botonPasar)
-			{
-//				salida.format("%d\n", 2); // CODIGO PARA INDICAR QUE EL JUGADOR PASA 
-//				//salida.format("pasar") ; 
-//				salida.flush();
-				mostrarMensaje ("Has pasado tu turno \n");
-				miTurno = false; 
-				System.out.println("Jugador "  + posicionEnMesa +" pasa");
-			}
-			else if(e.getSource() ==botonDescartar)
-			{
-				enviarCartasDescarte (cartasDescarteSeleccionadas());
-				this.remove(botonDescartar);
-			}
-				
-	    	if (faseDescarte)
-	    	{
-	    		
-	    		
-	    		for (int i  = 0 ; i < cartas.length ; i ++)
-	    		{
-	    			if (e.getSource() == cartas[i] )//&& cartasMano[i].getDescartar() == false)
-	    			{
-	    			
-	    				//cartasMano[i].setDescartar(true);
-	    				
-	    				cartas[i].setBounds(400+(i*140), 80, 120, 180);
-	    				cartas[i].setForeground(new java.awt.Color(255,230,0));
-	    				System.out.println("entra al if");
-	    				
-	    			}
-	    			else if(e.getSource() == cartas[i] ) // && cartasMano[i].getDescartar() )
-	    			{
-	    				//cartasMano[i].setDescartar(false);
-	    				cartas[i].setBounds(400+ (i*140), 100, 120, 180);
-	    				
-	    			}
-	    		}
-	    			
-	    			
-	    			
+		    {
+		    	if( e.getSource() == botonSubirApuesta )
+				{
+		    		
+					setValorApuesta(10);
+					actualizarTextoApuesta(); 
+				}
+				else if (e.getSource() == botonBajarApuesta)
+				{
+					setValorApuesta(10);
+					actualizarTextoApuesta(); 
+					
+				}
+	
+				else if(e.getSource() == botonApostar)
+				{
+					
+	//				salida.format("%d\n", valorApuesta); //lee del socket el valor de apuesta mÃ­nima 
+	//				salida.flush(); 
+					mostrarMensaje("Has Apostado " + valorApuesta +"\n");
+					mostrarMensaje("Turno Finalizado\n");
+					setDineroRestante(valorApuesta);  // resta el valor apostado al dinero restante
+					
+					salida.format("%d\n",3); //CODIGO PARA RETIRARSEr
+					salida.flush() ; 
+					System.out.println("Apuesta: "  + valorApuesta);
+					miTurno = false; 
+				}
+				else if(e.getSource() == botonRetirarse)
+				{
+	//				salida.format("%d\n", 3); //CODIGO PARA RETIRARSEr
+	//				//salida.format("retirar); 
+	//				salida.flush() ; 
+					
+					activoEnRonda = false;
+					mostrarMensaje("Te retiras de la mano en curso.");
+					
+					System.out.println("Jugador "  + posicionEnMesa +"se retira" );
+					
+				}
+				else if (e.getSource () == botonIgualar )
+				{
+					mostrarMensaje ("Igualas Apuesta"); 
+					salida.format("%d\n", 4); 
+					salida.flush();
+					
+				}
+				else if(e.getSource () == botonPasar)
+				{
+	//				salida.format("%d\n", 2); // CODIGO PARA INDICAR QUE EL JUGADOR PASA 
+	//				//salida.format("pasar") ; 
+	//				salida.flush();
+					mostrarMensaje ("Has pasado tu turno \n");
+					miTurno = false; 
+					System.out.println("Jugador "  + posicionEnMesa +" pasa");
+				}
+				else if(e.getSource() ==botonDescartar)
+				{
+					enviarCartasDescarte (cartasDescarteSeleccionadas());
+					this.remove(botonDescartar);
+				}
+					 
+		    	if (faseDescarte)
+		    	{
+		    		
+		    		
+		    		for (int i  = 0 ; i < cartas.length ; i ++)
+		    		{
+		    			if (e.getSource() == cartas[i] )//&& cartasMano[i].getDescartar() == false)
+		    			{
+		    			
+		    				//cartasMano[i].setDescartar(true);
+		    				
+		    				cartas[i].setBounds(400+(i*140), 80, 120, 180);
+		    				cartas[i].setForeground(new java.awt.Color(255,230,0));
+		    				System.out.println("entra al if");
+		    				
+		    			}
+		    			else if(e.getSource() == cartas[i] ) // && cartasMano[i].getDescartar() )
+		    			{
+		    				//cartasMano[i].setDescartar(false);
+		    				cartas[i].setBounds(400+ (i*140), 100, 120, 180);
+		    				
+		    			}
+		    		}
+		    			
+		    			
+		    			
+		    	}
 	    	}
-	    	}
+	    	else 
+	    		mostrarMensaje ("Espere su turno \n");
 	        
 	    }
 	
@@ -891,3 +1109,22 @@ public class ClientePoker extends JFrame  implements  Runnable{
 
 
 }
+
+
+/*
+ * LABEL CON DINERO APOSTADO -YA
+ * LABEL CON MONTO TOTAL- YA
+ * IMAGEN DEALEAR
+ * IMAGEN SMALL BLIND
+ * IMAGEN BIG BLIND 
+ * CONDICIONAR VISTA BOTON IGUALR 
+ * MOSTRAR CARTAS COMUNES RECIBE 0 , 1 , 2 , 3 ,4 -YA
+ *  0 MUESTRA FLOP 
+ *  1 MUESTRA CARTA 4
+ *  2 MUESTRA CARTA 5
+ */
+
+
+
+
+
